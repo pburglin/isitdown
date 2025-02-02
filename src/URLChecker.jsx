@@ -3,7 +3,7 @@ import URLInput from './URLInput';
 import CheckStatusButton from './CheckStatusButton';
 import StatusDisplay from './StatusDisplay';
 import RecentChecks from './RecentChecks';
-import { validateURL, checkURLStatus, persistChecks } from './utils';
+import { validateURL, persistChecks } from './utils';
 
 const URLChecker = () => {
   const [inputURL, setInputURL] = useState('');
@@ -26,7 +26,20 @@ const URLChecker = () => {
     setIsChecking(true);
     
     try {
-      const status = await checkURLStatus(fullURL);
+      const response = await fetch('/api/check', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ url: fullURL }),
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to check URL status');
+      }
+      
+      const status = await response.json();
       setStatusResult(status);
       
       setRecentChecks(prev => {
@@ -38,6 +51,8 @@ const URLChecker = () => {
         persistChecks(newChecks);
         return newChecks;
       });
+    } catch (error) {
+      setErrorMessage(error.message);
     } finally {
       setIsChecking(false);
     }
