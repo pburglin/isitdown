@@ -1,38 +1,47 @@
-export const validateURL = (url) => {
+export function validateURL(url) {
   try {
     new URL(url);
     return true;
-  } catch (e) {
+  } catch {
     return false;
   }
-};
+}
 
-export const checkURLStatus = async (url) => {
+export async function checkURLStatus(url) {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 10000);
+  
   try {
-    const response = await fetch(url, { method: 'HEAD', mode: 'cors' });
-    const { status } = response;
-
-    if (status === 200 || status === 440) {
-      return {
-        status: 'success',
-        statusCode: status,
-        message: `URL is accessible. Status code: ${status}`,
-      };
-    } else {
-      return {
-        status: 'error',
-        statusCode: status,
-        message: `URL is not accessible. Status code: ${status}`,
-      };
-    }
+    const startTime = Date.now();
+    const response = await fetch(url, {
+      method: 'HEAD',
+      mode: 'cors',
+      signal: controller.signal,
+      headers: { 'User-Agent': 'URLStatusChecker/1.0' }
+    });
+    const responseTime = Date.now() - startTime;
+    
+    return {
+      up: response.ok,
+      status: response.status,
+      timestamp: Date.now(),
+      responseTime,
+      error: null
+    };
   } catch (error) {
     return {
-      status: 'error',
-      message: `Error checking URL: ${error.message}`,
+      up: false,
+      status: 0,
+      timestamp: Date.now(),
+      responseTime: null,
+      error: error.name === 'AbortError' ? 'Request timed out' : error.message
     };
+  } finally {
+    clearTimeout(timeoutId);
   }
-};
+}
 
-export const persistChecks = (checks) => {
-  sessionStorage.setItem('recentChecks', JSON.stringify(checks));
-};
+export function persistChecks(checks) {
+  const limitedChecks = checks.slice(-10); // Keep last 10 checks
+  sessionStorage.setItem('recentChecks', JSON.stringify(limitedChecks));
+}
