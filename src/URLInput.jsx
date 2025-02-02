@@ -1,20 +1,20 @@
 import React from 'react';
 
-const URLInput = ({ value, onChange }) => {
-  const handleChange = (e) => {
-    let url = e.target.value;
-    if (!url.startsWith('http://') && !url.startsWith('https://')) {
-      url = 'http://' + url; // Prepend http:// if missing
+const URLInput = ({ value, onChange, onEnter }) => {
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      onEnter?.();
     }
-    onChange(url);
   };
 
   return (
     <input
       type="text"
-      placeholder="Enter URL"
+      placeholder="https://example.com"
       value={value}
-      onChange={handleChange}
+      onChange={(e) => onChange(e.target.value)}
+      onKeyPress={handleKeyPress}
+      aria-label="Enter URL to check status"
     />
   );
 };

@@ -1,35 +1,45 @@
-body {
-  font-family: Arial, sans-serif;
-  margin: 0;
-  padding: 0;
-  background-color: #f0f0f0;
+/* Add these new styles */
+.status-message {
+  padding: 1rem;
+  border-radius: 4px;
+  margin: 1rem 0;
+  font-weight: 500;
 }
 
-h1 {
-  color: #333;
+.status-message.up {
+  background: #e8f5e9;
+  border: 1px solid #66bb6a;
+  color: #2e7d32;
 }
 
-input {
-  padding: 10px;
-  margin: 10px 0;
-  width: 100%;
-  max-width: 400px;
+.status-message.down {
+  background: #ffebee;
+  border: 1px solid #ef5350;
+  color: #c62828;
 }
 
-button {
-  padding: 10px 15px;
-  background-color: #007bff;
-  color: white;
-  border: none;
-  cursor: pointer;
+.status-message.error {
+  background: #fff3e0;
+  border: 1px solid #ffa726;
+  color: #ef6c00;
 }
 
-button:hover {
-  background-color: #0056b3;
+.timestamp {
+  font-size: 0.8rem;
+  opacity: 0.8;
+  margin-top: 0.5rem;
 }
 
-div {
-  padding: 20px;
-  max-width: 600px;
-  margin: auto;
+.input-group {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+input[type="text"] {
+  flex: 1;
+  padding: 0.5rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 1rem;
 }
