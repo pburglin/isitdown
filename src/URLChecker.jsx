@@ -43,6 +43,33 @@ const URLChecker = () => {
     }
   };
 
+  const handleCheckAgain = async (url) => {
+    const urlWithoutProtocol = url.replace(/^https?:\/\//, '');
+    const protocolFromUrl = url.startsWith('https://') ? 'https://' : 'http://';
+    setProtocol(protocolFromUrl);
+    setInputURL(urlWithoutProtocol);
+    
+    setErrorMessage('');
+    setIsChecking(true);
+    
+    try {
+      const status = await checkURLStatus(url);
+      setStatusResult(status);
+      
+      setRecentChecks(prev => {
+        const newChecks = [...prev, { 
+          url: url, 
+          ...status,
+          timestamp: Date.now() 
+        }];
+        persistChecks(newChecks);
+        return newChecks;
+      });
+    } finally {
+      setIsChecking(false);
+    }
+  };
+
   useEffect(() => {
     if (!statusResult) return;
     
@@ -77,7 +104,7 @@ const URLChecker = () => {
       </div>
       
       <StatusDisplay result={statusResult} error={errorMessage} />
-      <RecentChecks checks={recentChecks} />
+      <RecentChecks checks={recentChecks} onCheckAgain={handleCheckAgain} />
     </div>
   );
 };
