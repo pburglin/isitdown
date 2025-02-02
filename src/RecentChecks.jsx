@@ -5,7 +5,7 @@ const RecentChecks = ({ checks, onCheckAgain }) => {
     <div>
       <h2>Recent Checks</h2>
       <ul>
-        {checks.map((check, index) => (
+        {checks.slice().reverse().map((check, index) => (
           <li key={index}>
             <a 
               href="#" 
@@ -17,7 +17,7 @@ const RecentChecks = ({ checks, onCheckAgain }) => {
               {check.url}: {check.status.up ? 'Up' : 'Down'} (HTTP {check.status})
             </a>
             <span style={{ fontSize: '0.8rem', marginLeft: '0.5rem', color: '#777' }}>
-              {new Date(check.timestamp).toLocaleTimeString()}
+            {new Date(check.timestamp).toLocaleDateString()}   {new Date(check.timestamp).toLocaleTimeString()}
             </span>
           </li>
         ))}
