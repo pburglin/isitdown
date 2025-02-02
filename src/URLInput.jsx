@@ -1,6 +1,6 @@
 import React from 'react';
 
-const URLInput = ({ value, onChange, onEnter }) => {
+const URLInput = ({ value, onChange, onEnter, placeholder }) => {
   const handleKeyPress = (e) => {
     if (e.key === 'Enter') {
       onEnter?.();
@@ -10,7 +10,7 @@ const URLInput = ({ value, onChange, onEnter }) => {
   return (
     <input
       type="text"
-      placeholder="https://example.com"
+      placeholder={placeholder}
       value={value}
       onChange={(e) => onChange(e.target.value)}
       onKeyPress={handleKeyPress}

@@ -13,10 +13,12 @@ const URLChecker = () => {
   const [recentChecks, setRecentChecks] = useState(
     JSON.parse(sessionStorage.getItem('recentChecks') || '[]')
   );
+  const [protocol, setProtocol] = useState('https://');
 
   const handleCheckStatus = async () => {
-    if (!validateURL(inputURL)) {
-      setErrorMessage('Please enter a valid URL (e.g., https://example.com)');
+    const fullURL = protocol + inputURL;
+    if (!validateURL(fullURL)) {
+      setErrorMessage('Please enter a valid URL (e.g., www.example.com)');
       return;
     }
     
@@ -24,12 +26,12 @@ const URLChecker = () => {
     setIsChecking(true);
     
     try {
-      const status = await checkURLStatus(inputURL);
+      const status = await checkURLStatus(fullURL);
       setStatusResult(status);
       
       setRecentChecks(prev => {
         const newChecks = [...prev, { 
-          url: inputURL, 
+          url: fullURL, 
           ...status,
           timestamp: Date.now() 
         }];
@@ -54,10 +56,19 @@ const URLChecker = () => {
   return (
     <div className="checker-container">
       <div className="input-group">
+        <select
+          value={protocol}
+          onChange={(e) => setProtocol(e.target.value)}
+          aria-label="Select URL protocol"
+        >
+          <option value="http://">http://</option>
+          <option value="https://">https://</option>
+        </select>
         <URLInput 
           value={inputURL} 
           onChange={setInputURL} 
           onEnter={handleCheckStatus}
+          placeholder="www.example.com"
         />
         <CheckStatusButton 
           onClick={handleCheckStatus} 
