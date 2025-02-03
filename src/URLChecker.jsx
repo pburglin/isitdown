@@ -43,6 +43,11 @@ const URLChecker = () => {
     }
   };
 
+  const clearHistory = () => {
+    setRecentChecks([]);
+    sessionStorage.removeItem('recentChecks');
+  };
+
   const handleCheckAgain = async (url) => {
     const urlWithoutProtocol = url.replace(/^https?:\/\//, '');
     const protocolFromUrl = url.startsWith('https://') ? 'https://' : 'http://';
@@ -104,7 +109,7 @@ const URLChecker = () => {
       </div>
       
       <StatusDisplay result={statusResult} error={errorMessage} />
-      <RecentChecks checks={recentChecks} onCheckAgain={handleCheckAgain} />
+      <RecentChecks checks={recentChecks} onCheckAgain={handleCheckAgain} onClearHistory={clearHistory} />
     </div>
   );
 };
