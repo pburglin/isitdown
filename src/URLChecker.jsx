@@ -137,8 +137,8 @@ useEffect(() => {
       <StatusDisplay result={statusResult} error={errorMessage} />
       
       {statusResult && (
-        <div className="auto-refresh-container" style={{ margin: '1rem 0', display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <label style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+        <div className="auto-refresh-container">
+          <label className="auto-refresh-label">
             <input
               type="checkbox"
               checked={autoRefresh}
@@ -147,7 +147,7 @@ useEffect(() => {
             Auto-refresh every 60 seconds
           </label>
           {autoRefresh && countdown !== null && (
-            <span style={{ fontSize: '0.9em', color: '#666' }}>
+            <span className="countdown">
               Next refresh in {countdown}s
             </span>
           )}
