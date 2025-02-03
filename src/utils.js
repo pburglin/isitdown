@@ -7,9 +7,13 @@ export function validateURL(url) {
   }
 }
 
+const API_BASE_URL = import.meta.env.PROD 
+  ? 'https://imaginative-peony-1093fd.netlify.app'
+  : '';
+
 export async function checkURLStatus(url) {
   try {
-    const response = await fetch('/api/check', {
+    const response = await fetch(`${API_BASE_URL}/api/check`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -22,7 +26,6 @@ export async function checkURLStatus(url) {
     }
 
     const result = await response.json();
-    //result.up = true; // Set up to true when there are no errors
     return result;
   } catch (error) {
     return {
