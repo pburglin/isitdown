@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+
+# Protect sensitive routes
+Disallow: /api/
+
+# Crawl-delay for better server performance
+Crawl-delay: 10
+
+Sitemap: https://sitecheck.us/sitemap.xml
