@@ -33,11 +33,11 @@ const URLChecker = () => {
       setStatusResult(status);
       
       setRecentChecks(prev => {
-        const newChecks = [...prev, { 
-          url: fullURL, 
+        const newChecks = [...prev, {
+          url: fullURL,
           ...status,
-          timestamp: Date.now() 
-        }];
+          timestamp: Date.now()
+        }].slice(-10); // Keep only the last 10 checks
         persistChecks(newChecks);
         return newChecks;
       });
@@ -65,11 +65,11 @@ const URLChecker = () => {
       setStatusResult(status);
       
       setRecentChecks(prev => {
-        const newChecks = [...prev, { 
-          url: url, 
+        const newChecks = [...prev, {
+          url: url,
           ...status,
-          timestamp: Date.now() 
-        }];
+          timestamp: Date.now()
+        }].slice(-10); // Keep only the last 10 checks
         persistChecks(newChecks);
         return newChecks;
       });
