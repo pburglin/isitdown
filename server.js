@@ -1,7 +1,40 @@
 import express from 'express';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
-import { checkURLStatus } from './src/utils.js';
+import fetch from 'node-fetch';
+
+async function checkURLStatus(url) {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 10000);
+  
+  try {
+    const startTime = Date.now();
+    const response = await fetch(url, {
+      method: 'HEAD',
+      signal: controller.signal,
+      headers: { 'User-Agent': 'URLStatusChecker/1.0' }
+    });
+    const responseTime = Date.now() - startTime;
+    
+    return {
+      up: response.ok,
+      status: response.status,
+      timestamp: Date.now(),
+      responseTime,
+      error: null
+    };
+  } catch (error) {
+    return {
+      up: false,
+      status: 0,
+      timestamp: Date.now(),
+      responseTime: null,
+      error: error.name === 'AbortError' ? 'Request timed out' : error.message
+    };
+  } finally {
+    clearTimeout(timeoutId);
+  }
+}
 import fs from 'fs';
 
 const app = express();

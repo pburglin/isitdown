@@ -8,36 +8,28 @@ export function validateURL(url) {
 }
 
 export async function checkURLStatus(url) {
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 10000);
-  
   try {
-    const startTime = Date.now();
-    const response = await fetch(url, {
-      method: 'HEAD',
-      mode: 'cors',
-      signal: controller.signal,
-      headers: { 'User-Agent': 'URLStatusChecker/1.0' }
+    const response = await fetch('/api/check', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ url })
     });
-    const responseTime = Date.now() - startTime;
     
-    return {
-      up: response.ok,
-      status: response.status,
-      timestamp: Date.now(),
-      responseTime,
-      error: null
-    };
+    if (!response.ok) {
+      throw new Error('Server error');
+    }
+    
+    return await response.json();
   } catch (error) {
     return {
       up: false,
       status: 0,
       timestamp: Date.now(),
       responseTime: null,
-      error: error.name === 'AbortError' ? 'Request timed out' : error.message
+      error: error.message
     };
-  } finally {
-    clearTimeout(timeoutId);
   }
 }
 
