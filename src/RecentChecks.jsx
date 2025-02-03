@@ -7,7 +7,17 @@ const RecentChecks = ({ checks, onCheckAgain, onClearHistory }) => {
         <h2>Recent Checks</h2>
         <button
           onClick={onClearHistory}
-          style={{ fontSize: '1rem', padding: '0.2rem 0.5rem', background: 'transparent', border: 'none', cursor: 'pointer' }}
+          style={{
+            fontSize: '1rem',
+            padding: '0.2rem 0.5rem',
+            background: 'transparent',
+            border: 'none',
+            cursor: 'pointer',
+            color: '#666',
+            borderRadius: '4px'
+          }}
+          onMouseEnter={(e) => e.target.style.backgroundColor = '#f0f0f0'}
+          onMouseLeave={(e) => e.target.style.backgroundColor = 'transparent'}
         >
           X
         </button>
