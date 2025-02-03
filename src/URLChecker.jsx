@@ -14,7 +14,10 @@ const URLChecker = () => {
     JSON.parse(sessionStorage.getItem('recentChecks') || '[]')
   );
   const [protocol, setProtocol] = useState('https://');
-
+  const [autoRefresh, setAutoRefresh] = useState(false);
+  const [nextRefreshTime, setNextRefreshTime] = useState(null);
+  const [countdown, setCountdown] = useState(null);
+  
   const handleCheckStatus = async () => {
     const fullURL = protocol + inputURL;
     if (!validateURL(fullURL)) {
@@ -76,14 +79,37 @@ const URLChecker = () => {
   };
 
   useEffect(() => {
-    if (!statusResult) return;
+    if (!statusResult || !autoRefresh) {
+      setNextRefreshTime(null);
+      return;
+    }
     
     const interval = setInterval(() => {
       handleCheckStatus();
+      setNextRefreshTime(Date.now() + 60000);
     }, 60000);
 
+    setNextRefreshTime(Date.now() + 60000);
     return () => clearInterval(interval);
-  }, [statusResult?.url]); // Re-run when URL changes
+  }, [statusResult?.url, autoRefresh]); // Re-run when URL or autoRefresh changes
+// Update countdown timer
+useEffect(() => {
+  if (!autoRefresh || !nextRefreshTime) {
+    setCountdown(null);
+    return;
+  }
+  
+  const updateCountdown = () => {
+    const remaining = Math.max(0, Math.round((nextRefreshTime - Date.now()) / 1000));
+    setCountdown(remaining);
+  };
+  
+  updateCountdown(); // Initial update
+  const timerInterval = setInterval(updateCountdown, 1000);
+  
+  return () => clearInterval(timerInterval);
+}, [autoRefresh, nextRefreshTime]);
+
 
   return (
     <div className="checker-container">
@@ -109,6 +135,25 @@ const URLChecker = () => {
       </div>
       
       <StatusDisplay result={statusResult} error={errorMessage} />
+      
+      {statusResult && (
+        <div className="auto-refresh-container" style={{ margin: '1rem 0', display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <label style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+            <input
+              type="checkbox"
+              checked={autoRefresh}
+              onChange={(e) => setAutoRefresh(e.target.checked)}
+            />
+            Auto-refresh every 60 seconds
+          </label>
+          {autoRefresh && countdown !== null && (
+            <span style={{ fontSize: '0.9em', color: '#666' }}>
+              Next refresh in {countdown}s
+            </span>
+          )}
+        </div>
+      )}
+      
       <RecentChecks checks={recentChecks} onCheckAgain={handleCheckAgain} onClearHistory={clearHistory} />
     </div>
   );
