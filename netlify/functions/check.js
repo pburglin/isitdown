@@ -1,5 +1,11 @@
 const fetch = require('node-fetch');
 
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'Content-Type, Accept, Origin, Authorization',
+  'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS'
+};
+
 const checkURLStatus = async (url) => {
   try {
     console.log('Checking URL:', url);
@@ -36,15 +42,11 @@ const checkURLStatus = async (url) => {
 };
 
 exports.handler = async function(event, context) {
-  // Add CORS headers for preflight requests
+  // Handle preflight requests
   if (event.httpMethod === 'OPTIONS') {
     return {
-      statusCode: 200,
-      headers: {
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Headers': 'Content-Type',
-        'Access-Control-Allow-Methods': 'POST, OPTIONS'
-      }
+      statusCode: 204, // No content needed for preflight
+      headers: corsHeaders
     };
   }
 
@@ -52,7 +54,8 @@ exports.handler = async function(event, context) {
     return {
       statusCode: 405,
       headers: {
-        'Access-Control-Allow-Origin': '*'
+        ...corsHeaders,
+        'Content-Type': 'application/json'
       },
       body: JSON.stringify({ error: 'Method not allowed' })
     };
@@ -66,7 +69,8 @@ exports.handler = async function(event, context) {
       return {
         statusCode: 400,
         headers: {
-          'Access-Control-Allow-Origin': '*'
+          ...corsHeaders,
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify({ error: 'URL is required' })
       };
@@ -78,8 +82,8 @@ exports.handler = async function(event, context) {
     return {
       statusCode: 200,
       headers: {
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*'
+        ...corsHeaders,
+        'Content-Type': 'application/json'
       },
       body: JSON.stringify(status)
     };
@@ -88,7 +92,8 @@ exports.handler = async function(event, context) {
     return {
       statusCode: 500,
       headers: {
-        'Access-Control-Allow-Origin': '*'
+        ...corsHeaders,
+        'Content-Type': 'application/json'
       },
       body: JSON.stringify({ error: error.message })
     };
