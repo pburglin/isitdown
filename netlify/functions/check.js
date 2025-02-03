@@ -1,5 +1,3 @@
-import fetch from 'node-fetch';
-
 const checkURLStatus = async (url) => {
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), 10000);
@@ -34,9 +32,24 @@ const checkURLStatus = async (url) => {
 };
 
 export default async (req, context) => {
+  // Add CORS headers for preflight requests
+  if (req.httpMethod === 'OPTIONS') {
+    return {
+      statusCode: 200,
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Headers': 'Content-Type',
+        'Access-Control-Allow-Methods': 'POST, OPTIONS'
+      }
+    };
+  }
+
   if (req.httpMethod !== 'POST') {
     return {
       statusCode: 405,
+      headers: {
+        'Access-Control-Allow-Origin': '*'
+      },
       body: JSON.stringify({ error: 'Method not allowed' })
     };
   }
@@ -47,6 +60,9 @@ export default async (req, context) => {
     if (!url) {
       return {
         statusCode: 400,
+        headers: {
+          'Access-Control-Allow-Origin': '*'
+        },
         body: JSON.stringify({ error: 'URL is required' })
       };
     }
@@ -64,6 +80,9 @@ export default async (req, context) => {
   } catch (error) {
     return {
       statusCode: 500,
+      headers: {
+        'Access-Control-Allow-Origin': '*'
+      },
       body: JSON.stringify({ error: error.message })
     };
   }
