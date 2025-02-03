@@ -15,6 +15,13 @@ const RecentChecks = ({ checks, onCheckAgain, onClearHistory }) => {
       <ul>
         {checks.slice().reverse().map((check, index) => (
           <li key={index}>
+            <span style={{ 
+              color: check.up ? '#22c55e' : '#ef4444',
+              marginRight: '8px',
+              fontWeight: 'bold'
+            }}>
+              {check.up ? '✓' : '✗'}
+            </span>
             <a 
               href="#"
               onClick={(e) => {
