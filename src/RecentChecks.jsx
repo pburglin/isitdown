@@ -22,7 +22,7 @@ const RecentChecks = ({ checks, onCheckAgain, onClearHistory }) => {
                 onCheckAgain(check.url);
               }}
             >
-              {check.url}: {check.status.up ? 'Up' : 'Down'} (HTTP {check.status})
+              {check.url}: {check.up ? 'Up' : 'Down'} (HTTP {check.status})
             </a>
             <span style={{ fontSize: '0.8rem', marginLeft: '0.5rem', color: '#777' }}>
               {new Date(check.timestamp).toLocaleDateString()}   {new Date(check.timestamp).toLocaleTimeString()}

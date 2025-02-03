@@ -20,8 +20,10 @@ export async function checkURLStatus(url) {
     if (!response.ok) {
       throw new Error('Server error');
     }
-    
-    return await response.json();
+
+    const result = await response.json();
+    //result.up = true; // Set up to true when there are no errors
+    return result;
   } catch (error) {
     return {
       up: false,
