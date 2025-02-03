@@ -7,13 +7,9 @@ export function validateURL(url) {
   }
 }
 
-const API_ENDPOINT = import.meta.env.PROD 
-  ? '/.netlify/functions/check'
-  : '/api/check';
-
 export async function checkURLStatus(url) {
   try {
-    const response = await fetch(API_ENDPOINT, {
+    const response = await fetch('/.netlify/functions/check', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -22,18 +18,20 @@ export async function checkURLStatus(url) {
     });
     
     if (!response.ok) {
-      throw new Error('Server error');
+      const errorData = await response.json().catch(() => ({ error: 'Server error' }));
+      throw new Error(errorData.error || 'Server error');
     }
 
     const result = await response.json();
     return result;
   } catch (error) {
+    console.error('URL check error:', error);
     return {
       up: false,
       status: 0,
       timestamp: Date.now(),
       responseTime: null,
-      error: error.message
+      error: error.message || 'Failed to check URL status'
     };
   }
 }

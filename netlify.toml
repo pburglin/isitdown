@@ -4,7 +4,7 @@
   functions = "netlify/functions"
 
 [[redirects]]
-  from = "/api/*"
+  from = "/.netlify/functions/*"
   to = "/.netlify/functions/:splat"
   status = 200
 
@@ -12,10 +12,6 @@
   from = "/*"
   to = "/index.html"
   status = 200
-
-[[headers]]
-  for = "/.netlify/functions/*"
-    [headers.values]
-    Access-Control-Allow-Origin = "*"
-    Access-Control-Allow-Headers = "Content-Type"
-    Access-Control-Allow-Methods = "GET, POST, OPTIONS"
+  
+[functions]
+  node_bundler = "esbuild"

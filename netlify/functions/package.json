@@ -1,7 +1,8 @@
 {
   "name": "isitdown-functions",
   "version": "1.0.0",
+  "main": "check.js",
   "dependencies": {
-    "node-fetch": "^2.6.1"
+    "node-fetch": "2.6.7"
   }
 }

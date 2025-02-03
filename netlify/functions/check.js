@@ -1,17 +1,20 @@
 const fetch = require('node-fetch');
 
 const checkURLStatus = async (url) => {
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 10000);
-  
   try {
+    console.log('Checking URL:', url);
     const startTime = Date.now();
+    
     const response = await fetch(url, {
       method: 'HEAD',
-      signal: controller.signal,
-      headers: { 'User-Agent': 'URLStatusChecker/1.0' }
+      headers: { 
+        'User-Agent': 'URLStatusChecker/1.0'
+      },
+      timeout: 10000
     });
+    
     const responseTime = Date.now() - startTime;
+    console.log('Response received:', response.status);
     
     return {
       up: response.ok,
@@ -21,21 +24,20 @@ const checkURLStatus = async (url) => {
       error: null
     };
   } catch (error) {
+    console.log('Error occurred:', error.message);
     return {
       up: false,
       status: 0,
       timestamp: Date.now(),
       responseTime: null,
-      error: error.name === 'AbortError' ? 'Request timed out' : error.message
+      error: error.message
     };
-  } finally {
-    clearTimeout(timeoutId);
   }
 };
 
-module.exports = async (req, context) => {
+exports.handler = async function(event, context) {
   // Add CORS headers for preflight requests
-  if (req.httpMethod === 'OPTIONS') {
+  if (event.httpMethod === 'OPTIONS') {
     return {
       statusCode: 200,
       headers: {
@@ -46,7 +48,7 @@ module.exports = async (req, context) => {
     };
   }
 
-  if (req.httpMethod !== 'POST') {
+  if (event.httpMethod !== 'POST') {
     return {
       statusCode: 405,
       headers: {
@@ -57,7 +59,8 @@ module.exports = async (req, context) => {
   }
 
   try {
-    const { url } = JSON.parse(req.body);
+    console.log('Request body:', event.body);
+    const { url } = JSON.parse(event.body);
     
     if (!url) {
       return {
@@ -70,6 +73,7 @@ module.exports = async (req, context) => {
     }
 
     const status = await checkURLStatus(url);
+    console.log('Check completed:', status);
     
     return {
       statusCode: 200,
@@ -80,6 +84,7 @@ module.exports = async (req, context) => {
       body: JSON.stringify(status)
     };
   } catch (error) {
+    console.log('Handler error:', error);
     return {
       statusCode: 500,
       headers: {
