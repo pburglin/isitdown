@@ -1,3 +1,5 @@
+const fetch = require('node-fetch');
+
 const checkURLStatus = async (url) => {
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), 10000);
@@ -31,7 +33,7 @@ const checkURLStatus = async (url) => {
   }
 };
 
-export default async (req, context) => {
+module.exports = async (req, context) => {
   // Add CORS headers for preflight requests
   if (req.httpMethod === 'OPTIONS') {
     return {
