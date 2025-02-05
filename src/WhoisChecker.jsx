@@ -73,7 +73,8 @@ export default function WhoisChecker() {
                 <li><span className="text-gray-600">Last Updated:</span> {formatDate(whoisData.updatedDate)}</li>
               </ul>
             </div>
-            
+
+            <br/>
             <div>
               <h3 className="font-semibold text-gray-700">Registrant Information</h3>
               <ul className="mt-2 space-y-2 pl-4">
@@ -84,6 +85,7 @@ export default function WhoisChecker() {
           </div>
 
           {whoisData.nameServers && (
+            <br/>
             <div className="mt-4">
               <h3 className="font-semibold text-gray-700">Name Servers</h3>
               <ul className="mt-2 list-disc list-inside pl-4">
