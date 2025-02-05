@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { validateURL } from './utils'
+import URLInput from './URLInput'
 
 const DNSChecker = () => {
   const [url, setUrl] = useState('')
@@ -41,12 +42,11 @@ const DNSChecker = () => {
     <div className="checker-container">
       <form onSubmit={handleSubmit}>
         <div className="input-group">
-          <input
-            type="text"
+          <URLInput
             value={url}
-            onChange={(e) => setUrl(e.target.value)}
+            onChange={setUrl}
+            onEnter={handleSubmit}
             placeholder="Enter website URL (e.g., https://example.com)"
-            className="url-input"
           />
           <button type="submit" disabled={loading} className="check-button">
             {loading ? 'Checking...' : 'Check DNS Records'}
