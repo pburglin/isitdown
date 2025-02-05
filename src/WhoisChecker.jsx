@@ -34,27 +34,25 @@ export default function WhoisChecker() {
   return (
     <div className="checker-container">
       <div className="input-group">
-        <div className="flex">
-          <input
-            type="text"
-            value={url}
-            onChange={(e) => setUrl(e.target.value)}
-            onEnter={checkWhois}
-            placeholder="Enter website URL (e.g., https://example.com)"
-            className="flex-1 px-4 py-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500"
-          />
-          <button
-            onClick={checkWhois}
-            disabled={loading || !url.trim()}
-            className={`px-4 py-2 rounded ${
-              loading || !url.trim()
-                ? 'bg-gray-300 cursor-not-allowed'
-                : 'bg-blue-500 hover:bg-blue-600 text-white'
-            }`}
-          >
-            {loading ? 'Checking...' : 'Check WHOIS'}
-          </button>
-        </div>
+        <input
+          type="text"
+          value={url}
+          onChange={(e) => setUrl(e.target.value)}
+          onEnter={checkWhois}
+          placeholder="Enter website URL (e.g., https://example.com)"
+          className="flex-1 px-4 py-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500"
+        />
+        <button
+          onClick={checkWhois}
+          disabled={loading || !url.trim()}
+          className={`px-4 py-2 rounded ${
+            loading || !url.trim()
+              ? 'bg-gray-300 cursor-not-allowed'
+              : 'bg-blue-500 hover:bg-blue-600 text-white'
+          }`}
+        >
+          {loading ? 'Checking...' : 'Check WHOIS'}
+        </button>
       </div>
 
       {error && (

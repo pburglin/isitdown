@@ -40,16 +40,18 @@ const DNSChecker = () => {
   return (
     <div className="checker-container">
       <form onSubmit={handleSubmit}>
-        <input
-          type="text"
-          value={url}
-          onChange={(e) => setUrl(e.target.value)}
-          placeholder="Enter website URL (e.g., https://example.com)"
-          className="url-input"
-        />
-        <button type="submit" disabled={loading} className="check-button">
-          {loading ? 'Checking...' : 'Check DNS Records'}
-        </button>
+        <div className="input-group">
+          <input
+            type="text"
+            value={url}
+            onChange={(e) => setUrl(e.target.value)}
+            placeholder="Enter website URL (e.g., https://example.com)"
+            className="url-input"
+          />
+          <button type="submit" disabled={loading} className="check-button">
+            {loading ? 'Checking...' : 'Check DNS Records'}
+          </button>
+        </div>
       </form>
 
       {error && <div className="error-message">{error}</div>}
