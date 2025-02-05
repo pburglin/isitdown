@@ -1,4 +1,6 @@
 const fetch = require('node-fetch');
+const tls = require('tls');
+const { URL } = require('url');
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -41,6 +43,69 @@ const checkURLStatus = async (url) => {
   }
 };
 
+const checkSSLCertificate = (urlString) => {
+  return new Promise((resolve, reject) => {
+    try {
+      const url = new URL(urlString);
+      const options = {
+        host: url.hostname,
+        port: url.port || 443,
+        servername: url.hostname
+      };
+
+      const socket = tls.connect(options, () => {
+        const cert = socket.getPeerCertificate(true);
+        socket.end();
+        
+        if (!cert) {
+          resolve({
+            valid: false,
+            error: 'No certificate found'
+          });
+          return;
+        }
+
+        const now = Date.now();
+        const validFrom = new Date(cert.valid_from).getTime();
+        const validTo = new Date(cert.valid_to).getTime();
+        const valid = now > validFrom && now < validTo;
+
+        resolve({
+          valid,
+          subject: cert.subject.CN,
+          issuer: cert.issuer.CN,
+          validFrom: cert.valid_from,
+          validTo: cert.valid_to,
+          protocol: socket.getProtocol()
+        });
+      });
+
+      socket.on('error', (error) => {
+        socket.end();
+        resolve({
+          valid: false,
+          error: error.message
+        });
+      });
+
+      // Set timeout for SSL check
+      socket.setTimeout(10000, () => {
+        socket.end();
+        resolve({
+          valid: false,
+          error: 'Connection timed out'
+        });
+      });
+
+    } catch (error) {
+      resolve({
+        valid: false,
+        error: error.message
+      });
+    }
+  });
+};
+
 exports.handler = async function(event, context) {
   // Handle preflight requests
   if (event.httpMethod === 'OPTIONS') {
@@ -63,7 +128,7 @@ exports.handler = async function(event, context) {
 
   try {
     console.log('Request body:', event.body);
-    const { url } = JSON.parse(event.body);
+    const { url, type } = JSON.parse(event.body);
     
     if (!url) {
       return {
@@ -76,8 +141,14 @@ exports.handler = async function(event, context) {
       };
     }
 
-    const status = await checkURLStatus(url);
-    console.log('Check completed:', status);
+    let result;
+    if (type === 'ssl') {
+      result = await checkSSLCertificate(url);
+    } else {
+      result = await checkURLStatus(url);
+    }
+    
+    console.log('Check completed:', result);
     
     return {
       statusCode: 200,
@@ -85,7 +156,7 @@ exports.handler = async function(event, context) {
         ...corsHeaders,
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify(status)
+      body: JSON.stringify(result)
     };
   } catch (error) {
     console.log('Handler error:', error);
