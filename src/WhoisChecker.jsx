@@ -66,7 +66,7 @@ export default function WhoisChecker() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <h3 className="font-semibold text-gray-700">Domain Information</h3>
-              <ul className="mt-2 space-y-2">
+              <ul className="mt-2 space-y-2 pl-4">
                 <li><span className="text-gray-600">Domain Name:</span> {whoisData.domainName}</li>
                 <li><span className="text-gray-600">Registrar:</span> {whoisData.registrar || 'Not available'}</li>
                 <li><span className="text-gray-600">Creation Date:</span> {formatDate(whoisData.creationDate)}</li>
@@ -77,7 +77,7 @@ export default function WhoisChecker() {
             
             <div>
               <h3 className="font-semibold text-gray-700">Registrant Information</h3>
-              <ul className="mt-2 space-y-2">
+              <ul className="mt-2 space-y-2 pl-4">
                 <li><span className="text-gray-600">Organization:</span> {whoisData.registrant.organization}</li>
                 <li><span className="text-gray-600">Country:</span> {whoisData.registrant.country}</li>
               </ul>
@@ -87,7 +87,7 @@ export default function WhoisChecker() {
           {whoisData.nameServers && (
             <div className="mt-4">
               <h3 className="font-semibold text-gray-700">Name Servers</h3>
-              <ul className="mt-2 list-disc list-inside">
+              <ul className="mt-2 list-disc list-inside pl-4">
                 {Array.isArray(whoisData.nameServers) 
                   ? whoisData.nameServers.map((ns, index) => (
                       <li key={index} className="text-gray-600">{ns}</li>
@@ -101,7 +101,7 @@ export default function WhoisChecker() {
           {whoisData.status && (
             <div className="mt-4">
               <h3 className="font-semibold text-gray-700">Domain Status</h3>
-              <ul className="mt-2 list-disc list-inside">
+              <ul className="mt-2 list-disc list-inside pl-4">
                 {Array.isArray(whoisData.status)
                   ? whoisData.status.map((status, index) => (
                       <li key={index} className="text-gray-600">{status}</li>
