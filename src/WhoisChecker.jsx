@@ -39,7 +39,8 @@ export default function WhoisChecker() {
             type="text"
             value={url}
             onChange={(e) => setUrl(e.target.value)}
-            placeholder="Enter domain name (e.g., example.com)"
+            onEnter={checkWhois}
+            placeholder="Enter website URL (e.g., https://example.com)"
             className="flex-1 px-4 py-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500"
           />
           <button

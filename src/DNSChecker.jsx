@@ -44,7 +44,7 @@ const DNSChecker = () => {
           type="text"
           value={url}
           onChange={(e) => setUrl(e.target.value)}
-          placeholder="Enter URL to check DNS records"
+          placeholder="Enter website URL (e.g., https://example.com)"
           className="url-input"
         />
         <button type="submit" disabled={loading} className="check-button">
@@ -56,6 +56,7 @@ const DNSChecker = () => {
 
       {records && (
         <div className="results-container">
+          <br/>
           <h3>DNS Records for {new URL(url).hostname}</h3>
           {records.a && records.a.length > 0 && (
             <div className="record-section">
