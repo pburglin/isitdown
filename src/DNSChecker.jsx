@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { isValidUrl } from './utils'
+import { validateURL } from './utils'
 
 const DNSChecker = () => {
   const [url, setUrl] = useState('')
@@ -14,7 +14,7 @@ const DNSChecker = () => {
     setRecords(null)
 
     try {
-      if (!isValidUrl(url)) {
+      if (!validateURL(url)) {
         throw new Error('Please enter a valid URL')
       }
 
