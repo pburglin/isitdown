@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import URLChecker from './URLChecker'
 import SSLChecker from './SSLChecker'
+import WhoisChecker from './WhoisChecker'
 import ErrorBoundary from './ErrorBoundary'
 
 const App = () => {
@@ -8,7 +9,8 @@ const App = () => {
 
   const tabs = [
     { id: 'url', label: 'URL Status Check', component: URLChecker },
-    { id: 'ssl', label: 'SSL Certificate Check', component: SSLChecker }
+    { id: 'ssl', label: 'SSL Certificate Check', component: SSLChecker },
+    { id: 'whois', label: 'WHOIS Lookup', component: WhoisChecker }
   ]
 
   return (

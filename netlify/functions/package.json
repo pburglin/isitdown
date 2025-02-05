@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "main": "check.js",
   "dependencies": {
-    "node-fetch": "2.6.7"
+    "node-fetch": "2.6.7",
+    "whois-json": "^2.0.4"
   }
 }
