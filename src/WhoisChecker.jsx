@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { performWhoisLookup } from './utils';
 
-export default function WhoisChecker({ url }) {
+export default function WhoisChecker() {
+  const [url, setUrl] = useState('');
   const [loading, setLoading] = useState(false);
   const [whoisData, setWhoisData] = useState(null);
   const [error, setError] = useState(null);
@@ -31,20 +32,28 @@ export default function WhoisChecker({ url }) {
   };
 
   return (
-    <div className="mt-4 p-4 bg-white rounded-lg shadow">
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-lg font-semibold text-gray-700">WHOIS Information</h2>
-        <button
-          onClick={checkWhois}
-          disabled={loading}
-          className={`px-4 py-2 rounded ${
-            loading
-              ? 'bg-gray-300 cursor-not-allowed'
-              : 'bg-blue-500 hover:bg-blue-600 text-white'
-          }`}
-        >
-          {loading ? 'Checking...' : 'Check WHOIS'}
-        </button>
+    <div className="checker-container">
+      <div className="input-group">
+        <div className="flex">
+          <input
+            type="text"
+            value={url}
+            onChange={(e) => setUrl(e.target.value)}
+            placeholder="Enter domain name (e.g., example.com)"
+            className="flex-1 px-4 py-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500"
+          />
+          <button
+            onClick={checkWhois}
+            disabled={loading || !url.trim()}
+            className={`px-4 py-2 rounded ${
+              loading || !url.trim()
+                ? 'bg-gray-300 cursor-not-allowed'
+                : 'bg-blue-500 hover:bg-blue-600 text-white'
+            }`}
+          >
+            {loading ? 'Checking...' : 'Check WHOIS'}
+          </button>
+        </div>
       </div>
 
       {error && (
