@@ -39,54 +39,51 @@ const StatusDisplay = ({ result, error }) => {
 
   const getMDNLink = (code) => `https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/${code}`;
 
+  const StatusCodeInfo = ({ status }) => (
+    status ? (
+      <>
+        <a 
+          href={getMDNLink(status)} 
+          target="_blank" 
+          rel="noopener noreferrer"
+        >
+          {status}
+        </a>
+        {HTTP_STATUS_CODES[status] && (
+          <>
+            {' • '}
+            <a 
+              href={getMDNLink(status)} 
+              target="_blank" 
+              rel="noopener noreferrer"
+            >
+              {HTTP_STATUS_CODES[status]}
+            </a>
+          </>
+        )}
+      </>
+    ) : null
+  );
+
   return (
     <div className={`status-message ${result.up ? 'up' : 'down'}`}>
       {result.up ? (
         <span>
           ✅ Online (HTTP{' '}
-          <a 
-            href={getMDNLink(result.status)} 
-            target="_blank" 
-            rel="noopener noreferrer"
-          >
-            {result.status}
-          </a>
-          {HTTP_STATUS_CODES[result.status] && (
-            <>
-              {' • '}
-              <a 
-                href={getMDNLink(result.status)} 
-                target="_blank" 
-                rel="noopener noreferrer"
-              >
-                {HTTP_STATUS_CODES[result.status]}
-              </a>
-            </>
-          )}
+          <StatusCodeInfo status={result.status} />
           {' • '}{result.responseTime}ms)
         </span>
       ) : (
-        <span>❌ Offline • {result.error || '(HTTP{' '}
-          <a 
-            href={getMDNLink(result.status)} 
-            target="_blank" 
-            rel="noopener noreferrer"
-          >
-            {result.status}
-          </a>
-          {HTTP_STATUS_CODES[result.status] && (
+        <span>
+          ❌ Offline
+          {result.status && (
             <>
-              {' • '}
-              <a 
-                href={getMDNLink(result.status)} 
-                target="_blank" 
-                rel="noopener noreferrer"
-              >
-                {HTTP_STATUS_CODES[result.status]}
-              </a>
+              {' • HTTP '}
+              <StatusCodeInfo status={result.status} />
             </>
           )}
-          {' • '}{result.responseTime}ms)'}</span>
+          {result.error && ` • ${result.error}`}
+        </span>
       )}
       <div className="timestamp">
         Last checked: {new Date(result.timestamp).toLocaleTimeString()}
