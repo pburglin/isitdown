@@ -7,6 +7,8 @@ import ErrorBoundary from './ErrorBoundary'
 
 const App = () => {
   const [activeTab, setActiveTab] = useState('url')
+  const [sharedURL, setSharedURL] = useState('')
+  const [sharedProtocol, setSharedProtocol] = useState('https://')
 
   const tabs = [
     { id: 'url', label: 'URL Status Check', component: URLChecker },
@@ -41,7 +43,12 @@ const App = () => {
               key={tab.id}
               style={{ display: activeTab === tab.id ? 'block' : 'none' }}
             >
-              <tab.component />
+              <tab.component
+                inputURL={sharedURL}
+                setInputURL={setSharedURL}
+                protocol={sharedProtocol}
+                setProtocol={setSharedProtocol}
+              />
             </div>
           ))}
         </div>

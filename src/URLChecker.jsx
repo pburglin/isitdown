@@ -5,15 +5,13 @@ import StatusDisplay from './StatusDisplay';
 import RecentChecks from './RecentChecks';
 import { validateURL, checkURLStatus, persistChecks } from './utils';
 
-const URLChecker = () => {
-  const [inputURL, setInputURL] = useState('');
+const URLChecker = ({ inputURL, setInputURL, protocol, setProtocol }) => {
   const [statusResult, setStatusResult] = useState(null);
   const [errorMessage, setErrorMessage] = useState('');
   const [isChecking, setIsChecking] = useState(false);
   const [recentChecks, setRecentChecks] = useState(
     JSON.parse(sessionStorage.getItem('recentChecks') || '[]')
   );
-  const [protocol, setProtocol] = useState('https://');
   const [autoRefresh, setAutoRefresh] = useState(false);
   const [nextRefreshTime, setNextRefreshTime] = useState(null);
   const [countdown, setCountdown] = useState(null);

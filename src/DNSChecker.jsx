@@ -2,12 +2,10 @@ import React, { useState } from 'react'
 import { validateURL } from './utils'
 import URLInput from './URLInput'
 
-const DNSChecker = () => {
-  const [inputURL, setInputURL] = useState('')
+const DNSChecker = ({ inputURL, setInputURL, protocol, setProtocol }) => {
   const [loading, setLoading] = useState(false)
   const [records, setRecords] = useState(null)
   const [error, setError] = useState(null)
-  const [protocol, setProtocol] = useState('https://')
 
   const handleSubmit = async (e) => {
     e.preventDefault()

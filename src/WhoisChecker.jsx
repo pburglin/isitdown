@@ -2,12 +2,10 @@ import { useState } from 'react';
 import { performWhoisLookup, validateURL } from './utils';
 import URLInput from './URLInput';
 
-export default function WhoisChecker() {
-  const [inputURL, setInputURL] = useState('');
+export default function WhoisChecker({ inputURL, setInputURL, protocol, setProtocol }) {
   const [loading, setLoading] = useState(false);
   const [whoisData, setWhoisData] = useState(null);
   const [error, setError] = useState(null);
-  const [protocol, setProtocol] = useState('https://');
 
   const checkWhois = async () => {
     const fullURL = protocol + inputURL;

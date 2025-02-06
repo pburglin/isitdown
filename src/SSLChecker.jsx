@@ -3,12 +3,10 @@ import URLInput from './URLInput'
 import StatusDisplay from './StatusDisplay'
 import { validateURL } from './utils'
 
-const SSLChecker = () => {
-  const [inputURL, setInputURL] = useState('')
+const SSLChecker = ({ inputURL, setInputURL, protocol, setProtocol }) => {
   const [certInfo, setCertInfo] = useState(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
-  const [protocol, setProtocol] = useState('https://')
 
   const checkSSL = async () => {
     const fullURL = protocol + inputURL
