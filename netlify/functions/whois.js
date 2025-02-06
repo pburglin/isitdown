@@ -30,37 +30,13 @@ const performWhoisLookup = async (url) => {
     const rawWhois = JSON.stringify(result, null, 2);
     console.log('Raw WHOIS result:', rawWhois);
 
-    // Handle multiple possible property names
-    const domainName = getValueFromMultipleKeys(result, ['domainName', 'domain_name', 'name']) || domain;
-    const registrar = getValueFromMultipleKeys(result, ['registrar', 'registrarName', 'registrar_name']);
-    const creationDate = getValueFromMultipleKeys(result, ['creationDate', 'created', 'creation_date']);
-    const expirationDate = getValueFromMultipleKeys(result, ['expirationDate', 'expires', 'expiration_date']);
-    const updatedDate = getValueFromMultipleKeys(result, ['updatedDate', 'updated', 'update_date']);
-    const organization = getValueFromMultipleKeys(result, ['registrantOrganization', 'registrant_organization', 'org']);
-    const country = getValueFromMultipleKeys(result, ['registrantCountry', 'registrant_country', 'country']);
-    const nameServers = result.nameServers || result.name_servers || [];
     const status = result.status || result.domain_status || [];
-
-    // Validate that we have at least some basic data
-    if (!registrar && !creationDate && !expirationDate) {
-      throw new Error('No WHOIS data available for this domain');
-    }
 
     return {
       success: true,
       timestamp: Date.now(),
       data: {
         rawWhois,
-        domainName,
-        registrar: registrar || 'Not available',
-        creationDate: creationDate || null,
-        expirationDate: expirationDate || null,
-        updatedDate: updatedDate || null,
-        nameServers: Array.isArray(nameServers) ? nameServers : [nameServers].filter(Boolean),
-        registrant: {
-          organization: organization || 'Private',
-          country: country || 'Not available'
-        },
         status: Array.isArray(status) ? status : [status].filter(Boolean)
       }
     };
