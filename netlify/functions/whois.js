@@ -27,7 +27,8 @@ const performWhoisLookup = async (url) => {
 
     // Perform WHOIS lookup
     const result = await whois(domain);
-    console.log('Raw WHOIS result:', JSON.stringify(result, null, 2));
+    const rawWhois = JSON.stringify(result, null, 2);
+    console.log('Raw WHOIS result:', rawWhois);
 
     // Handle multiple possible property names
     const domainName = getValueFromMultipleKeys(result, ['domainName', 'domain_name', 'name']) || domain;
@@ -49,6 +50,7 @@ const performWhoisLookup = async (url) => {
       success: true,
       timestamp: Date.now(),
       data: {
+        rawWhois,
         domainName,
         registrar: registrar || 'Not available',
         creationDate: creationDate || null,
