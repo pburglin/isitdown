@@ -66,7 +66,27 @@ const StatusDisplay = ({ result, error }) => {
           {' • '}{result.responseTime}ms)
         </span>
       ) : (
-        <span>❌ Offline • {result.error || 'Connection failed'}</span>
+        <span>❌ Offline • {result.error || '(HTTP{' '}
+          <a 
+            href={getMDNLink(result.status)} 
+            target="_blank" 
+            rel="noopener noreferrer"
+          >
+            {result.status}
+          </a>
+          {HTTP_STATUS_CODES[result.status] && (
+            <>
+              {' • '}
+              <a 
+                href={getMDNLink(result.status)} 
+                target="_blank" 
+                rel="noopener noreferrer"
+              >
+                {HTTP_STATUS_CODES[result.status]}
+              </a>
+            </>
+          )}
+          {' • '}{result.responseTime}ms)'}</span>
       )}
       <div className="timestamp">
         Last checked: {new Date(result.timestamp).toLocaleTimeString()}
