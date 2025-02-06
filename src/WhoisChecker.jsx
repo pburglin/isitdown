@@ -76,8 +76,15 @@ export default function WhoisChecker() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <h3 className="font-semibold text-gray-700">Domain Information</h3>
-              <pre className="bg-gray-100 p-4 rounded-lg overflow-x-auto text-sm">
-                {JSON.stringify(whoisData.rawWhois, null, 2)}
+              <pre className="bg-gray-100 p-4 rounded-lg overflow-x-auto text-sm whitespace-pre-wrap">
+                {whoisData.rawWhois
+                  .split('\\n')
+                  .map((line, i) => (
+                    <span key={i}>
+                      {line.replace(/\\r/g, '')}
+                      {i < whoisData.rawWhois.split('\\n').length - 1 && '\n'}
+                    </span>
+                  ))}
               </pre>
             </div>
           </div>
