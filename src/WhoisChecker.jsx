@@ -1,20 +1,27 @@
 import { useState } from 'react';
-import { performWhoisLookup } from './utils';
+import { performWhoisLookup, validateURL } from './utils';
 import URLInput from './URLInput';
 
 export default function WhoisChecker() {
-  const [url, setUrl] = useState('');
+  const [inputURL, setInputURL] = useState('');
   const [loading, setLoading] = useState(false);
   const [whoisData, setWhoisData] = useState(null);
   const [error, setError] = useState(null);
+  const [protocol, setProtocol] = useState('https://');
 
   const checkWhois = async () => {
+    const fullURL = protocol + inputURL;
+    if (!validateURL(fullURL)) {
+      setError('Please enter a valid URL (e.g., www.example.com)');
+      return;
+    }
+
     setLoading(true);
     setError(null);
     setWhoisData(null);
 
     try {
-      const result = await performWhoisLookup(url);
+      const result = await performWhoisLookup(fullURL);
       if (result.success) {
         setWhoisData(result.data);
       } else {
@@ -35,27 +42,31 @@ export default function WhoisChecker() {
   return (
     <div className="checker-container">
       <div className="input-group">
+        <select
+          value={protocol}
+          onChange={(e) => setProtocol(e.target.value)}
+          aria-label="Select URL protocol"
+        >
+          <option value="http://">http://</option>
+          <option value="https://">https://</option>
+        </select>
         <URLInput
-          value={url}
-          onChange={setUrl}
+          value={inputURL}
+          onChange={setInputURL}
           onEnter={checkWhois}
-          placeholder="Enter website URL (e.g., https://example.com)"
+          placeholder="www.example.com"
         />
         <button
           onClick={checkWhois}
-          disabled={loading || !url.trim()}
-          className={`px-4 py-2 rounded ${
-            loading || !url.trim()
-              ? 'bg-gray-300 cursor-not-allowed'
-              : 'bg-blue-500 hover:bg-blue-600 text-white'
-          }`}
+          disabled={loading || !inputURL.trim()}
+          className="check-button"
         >
           {loading ? 'Checking...' : 'Check WHOIS'}
         </button>
       </div>
 
       {error && (
-        <div className="text-red-500 mb-4">
+        <div className="status-message error">
           Error: {error}
         </div>
       )}

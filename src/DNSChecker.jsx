@@ -3,23 +3,27 @@ import { validateURL } from './utils'
 import URLInput from './URLInput'
 
 const DNSChecker = () => {
-  const [url, setUrl] = useState('')
+  const [inputURL, setInputURL] = useState('')
   const [loading, setLoading] = useState(false)
   const [records, setRecords] = useState(null)
   const [error, setError] = useState(null)
+  const [protocol, setProtocol] = useState('https://')
 
   const handleSubmit = async (e) => {
     e.preventDefault()
+    const fullURL = protocol + inputURL
+    
+    if (!validateURL(fullURL)) {
+      setError('Please enter a valid URL (e.g., www.example.com)')
+      return
+    }
+
     setLoading(true)
     setError(null)
     setRecords(null)
 
     try {
-      if (!validateURL(url)) {
-        throw new Error('Please enter a valid URL')
-      }
-
-      const hostname = new URL(url).hostname
+      const hostname = new URL(fullURL).hostname
       const response = await fetch('/.netlify/functions/dns', {
         method: 'POST',
         body: JSON.stringify({ hostname }),
@@ -42,11 +46,19 @@ const DNSChecker = () => {
     <div className="checker-container">
       <form onSubmit={handleSubmit}>
         <div className="input-group">
+          <select
+            value={protocol}
+            onChange={(e) => setProtocol(e.target.value)}
+            aria-label="Select URL protocol"
+          >
+            <option value="http://">http://</option>
+            <option value="https://">https://</option>
+          </select>
           <URLInput
-            value={url}
-            onChange={setUrl}
+            value={inputURL}
+            onChange={setInputURL}
             onEnter={handleSubmit}
-            placeholder="Enter website URL (e.g., https://example.com)"
+            placeholder="www.example.com"
           />
           <button type="submit" disabled={loading} className="check-button">
             {loading ? 'Checking...' : 'Check DNS Records'}
@@ -54,12 +66,16 @@ const DNSChecker = () => {
         </div>
       </form>
 
-      {error && <div className="error-message">{error}</div>}
+      {error &&
+      <div className="status-message error">
+        Error: {error}
+      </div>
+      }
 
       {records && (
         <div className="results-container">
           <br/>
-          <h3>DNS Records for {new URL(url).hostname}</h3>
+          <h3>DNS Records for {new URL(protocol + inputURL).hostname}</h3>
           {records.a && records.a.length > 0 && (
             <div className="record-section">
               <h4>A Records</h4>

@@ -1,19 +1,22 @@
 import React, { useState } from 'react'
 import URLInput from './URLInput'
 import StatusDisplay from './StatusDisplay'
+import { validateURL } from './utils'
 
 const SSLChecker = () => {
-  const [url, setUrl] = useState('')
+  const [inputURL, setInputURL] = useState('')
   const [certInfo, setCertInfo] = useState(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
-
-  const handleURLChange = (newUrl) => {
-    setUrl(newUrl)
-  }
+  const [protocol, setProtocol] = useState('https://')
 
   const checkSSL = async () => {
-    if (!url) return
+    const fullURL = protocol + inputURL
+    if (!validateURL(fullURL)) {
+      setError('Please enter a valid URL (e.g., www.example.com)')
+      return
+    }
+    
     setLoading(true)
     setError(null)
     setCertInfo(null)
@@ -24,7 +27,7 @@ const SSLChecker = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ url, type: 'ssl' }),
+        body: JSON.stringify({ url: protocol + inputURL, type: 'ssl' }),
       })
       
       const data = await response.json()
@@ -44,11 +47,19 @@ const SSLChecker = () => {
   return (
     <div className="checker-container">
       <div className="input-group">
-        <URLInput 
-          value={url}
-          onChange={handleURLChange}
+        <select
+          value={protocol}
+          onChange={(e) => setProtocol(e.target.value)}
+          aria-label="Select URL protocol"
+        >
+          <option value="http://">http://</option>
+          <option value="https://">https://</option>
+        </select>
+        <URLInput
+          value={inputURL}
+          onChange={setInputURL}
           onEnter={checkSSL}
-          placeholder="Enter website URL (e.g., https://example.com)"
+          placeholder="www.example.com"
         />
         <button onClick={checkSSL} disabled={loading}>
           {loading ? 'Checking...' : 'Check SSL'}
