@@ -14,7 +14,7 @@ const checkURLStatus = async (url) => {
     const startTime = Date.now();
     
     const response = await fetch(url, {
-      method: 'HEAD',
+      method: 'GET',
       headers: { 
         'User-Agent': 'URLStatusChecker/1.0'
       },
