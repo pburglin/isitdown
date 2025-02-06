@@ -1,5 +1,8 @@
 const whois = require('whois-json');
 const { URL } = require('url');
+const fs = require('fs').promises;
+const path = require('path');
+const https = require('https');
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -7,17 +10,81 @@ const corsHeaders = {
   'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS'
 };
 
+const CACHE_TTL = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+const CACHE_DIR = '/tmp';
+
 const extractDomain = (url) => {
   const parsedUrl = new URL(url);
-  // Remove 'www.' if present and get the base domain
   return parsedUrl.hostname.replace(/^www\./, '');
 };
 
-const getValueFromMultipleKeys = (obj, keys) => {
-  for (const key of keys) {
-    if (obj[key]) return obj[key];
+const getCacheFilePath = (domain) => {
+  return path.join(CACHE_DIR, `whois-${domain.replace(/[^a-zA-Z0-9]/g, '_')}.json`);
+};
+
+const getCachedData = async (domain) => {
+  try {
+    const cacheFile = getCacheFilePath(domain);
+    const data = await fs.readFile(cacheFile, 'utf8');
+    const cached = JSON.parse(data);
+    
+    if (Date.now() - cached.timestamp < CACHE_TTL) {
+      return cached.data;
+    }
+  } catch (error) {
+    // Cache miss or expired
+    return null;
   }
   return null;
+};
+
+const setCachedData = async (domain, data) => {
+  try {
+    const cacheFile = getCacheFilePath(domain);
+    await fs.writeFile(cacheFile, JSON.stringify({
+      timestamp: Date.now(),
+      data
+    }));
+  } catch (error) {
+    console.error('Cache write error:', error);
+  }
+};
+
+const fetchRDAP = (domain) => {
+  return new Promise((resolve, reject) => {
+    const req = https.get(
+      `https://rdap.org/domain/${domain}`,
+      { timeout: 5000 },
+      (res) => {
+        let data = '';
+        res.on('data', chunk => data += chunk);
+        res.on('end', () => {
+          try {
+            const result = JSON.parse(data);
+            resolve(result);
+          } catch (e) {
+            reject(new Error('Failed to parse RDAP response'));
+          }
+        });
+      }
+    );
+    
+    req.on('error', reject);
+    req.on('timeout', () => {
+      req.destroy();
+      reject(new Error('RDAP request timeout'));
+    });
+  });
+};
+
+const formatRDAPResponse = (rdapData) => {
+  return {
+    domain_name: rdapData.handle,
+    creation_date: rdapData.events?.find(e => e.eventAction === 'registration')?.eventDate,
+    expiration_date: rdapData.events?.find(e => e.eventAction === 'expiration')?.eventDate,
+    registrar: rdapData.entities?.[0]?.name,
+    status: rdapData.status || []
+  };
 };
 
 const performWhoisLookup = async (url) => {
@@ -25,27 +92,62 @@ const performWhoisLookup = async (url) => {
     const domain = extractDomain(url);
     console.log('Looking up domain:', domain);
 
-    // Perform WHOIS lookup
-    const result = await whois(domain);
-    const rawWhois = JSON.stringify(result, null, 2);
-    console.log('Raw WHOIS result:', rawWhois);
+    // Check cache first
+    const cachedData = await getCachedData(domain);
+    if (cachedData) {
+      return {
+        success: true,
+        timestamp: Date.now(),
+        data: cachedData,
+        source: 'cache'
+      };
+    }
 
-    const status = result.status || result.domain_status || [];
-
-    return {
-      success: true,
-      timestamp: Date.now(),
-      data: {
-        rawWhois,
-        status: Array.isArray(status) ? status : [status].filter(Boolean)
+    // Try WHOIS first
+    try {
+      const result = await whois(domain);
+      const processedResult = {
+        rawWhois: JSON.stringify(result, null, 2),
+        status: Array.isArray(result.status) ? result.status : 
+               (result.status ? [result.status] : []).filter(Boolean)
+      };
+      
+      await setCachedData(domain, processedResult);
+      
+      return {
+        success: true,
+        timestamp: Date.now(),
+        data: processedResult,
+        source: 'whois'
+      };
+    } catch (whoisError) {
+      // If we hit rate limit, try RDAP
+      if (whoisError.message && whoisError.message.includes('rateLimitExceeded')) {
+        console.log('WHOIS rate limit hit, trying RDAP...');
+        const rdapResult = await fetchRDAP(domain);
+        const processedResult = {
+          rawWhois: JSON.stringify(formatRDAPResponse(rdapResult), null, 2),
+          status: rdapResult.status || []
+        };
+        
+        await setCachedData(domain, processedResult);
+        
+        return {
+          success: true,
+          timestamp: Date.now(),
+          data: processedResult,
+          source: 'rdap'
+        };
       }
-    };
+      throw whoisError;
+    }
   } catch (error) {
-    console.error('WHOIS lookup error:', error);
+    console.error('Lookup error:', error);
     return {
       success: false,
       timestamp: Date.now(),
-      error: error.message || 'Failed to perform WHOIS lookup'
+      error: error.message || 'Failed to perform lookup',
+      source: error.message.includes('rateLimitExceeded') ? 'rate_limited' : 'error'
     };
   }
 };
