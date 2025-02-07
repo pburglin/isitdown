@@ -1,10 +1,10 @@
 # SiteCheck.us - Website Status & Uptime Monitoring
 
-[![Website Status](https://img.shields.io/website?url=https%3A%2F%2Fsitecheck.us)](https://sitecheck.us)
+[![Website Status](https://img.shields.io/website?url=https%3A%2F%2Fimaginative-peony-1093fd.netlify.app)](https://imaginative-peony-1093fd.netlify.app)
 
 ## 🚀 About
 
-[SiteCheck.us](https://sitecheck.us) is a simple and reliable website monitoring tool that helps you instantly check if a website is down for everyone or just you. Perfect for developers, system administrators, and anyone who needs to quickly verify website availability.
+[https://imaginative-peony-1093fd.netlify.app](https://imaginative-peony-1093fd.netlify.app) is a simple and reliable website monitoring tool that helps you instantly check if a website is down for everyone or just you. Perfect for developers, system administrators, and anyone who needs to quickly verify website availability.
 
 ## ✨ Key Features
 
